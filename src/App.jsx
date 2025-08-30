@@ -1,7 +1,10 @@
+// src/App.jsx
+
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
-import SignupPage from './pages/SignupPage'; // 나중에 만들 회원가입 페이지
+import SignupPage from './pages/SignupPage';
+import MainPage from './pages/MainPage'; // 1. MainPage 컴포넌트 import
 import './App.css';
 
 function App() {
@@ -9,7 +12,8 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
+          {/* 2. 기존 Navigate를 MainPage 컴포넌트로 변경 */}
+          <Route path="/" element={<MainPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
         </Routes>
