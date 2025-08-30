@@ -1,36 +1,63 @@
+/* src/pages/MainPage.css */
+
 .main-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  text-align: center;
-  background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+/* 로그인 사용자를 위한 컨테이너 스타일 추가 */
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .welcome-message {
-  font-size: 2.5rem;
-  color: #343a40;
+    font-size: 2.5rem;
+    color: #343a40;
 }
 
 .login-prompt h1 {
-  font-size: 2rem;
-  color: #495057;
-  margin-bottom: 20px;
+    font-size: 2rem;
+    color: #495057;
+    margin-bottom: 20px;
 }
 
 .login-button-main {
-  padding: 12px 24px;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  font-size: 1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+    padding: 12px 24px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .login-button-main:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
+}
+
+/* 로그아웃 버튼 스타일 추가 */
+.logout-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #6c757d; /* 회색 계열 색상 */
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #5a6268;
 }
