@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom'; // 🌟 Link import 추가
+import { useNavigate, Link } from 'react-router-dom';
 import './ProjectsPage.css';
 
 const ProjectsPage = () => {
@@ -52,7 +52,6 @@ const ProjectsPage = () => {
     <div className="projects-container">
       <div className="projects-header">
         <h1>내 프로젝트 목록 🚀</h1>
-        {/* 🌟 프로젝트 생성 페이지로 이동하는 버튼 추가 */}
         <Link to="/projects/create" className="create-project-button">
           + 새 프로젝트 생성
         </Link>
@@ -60,11 +59,14 @@ const ProjectsPage = () => {
       <div className="project-list">
         {projects.length > 0 ? (
           projects.map(project => (
-            <div key={project.id} className="project-card">
-              <h2>{project.name}</h2>
-              <p>{project.description}</p>
-              <span className="project-date">생성일: {new Date(project.created_at).toLocaleDateString()}</span>
-            </div>
+            // ✨ Link 컴포넌트로 project-card를 감싸서 클릭 시 상세 페이지로 이동하도록 수정
+            <Link key={project.id} to={`/project/${project.id}`} className="project-card-link">
+              <div className="project-card">
+                <h2>{project.name}</h2>
+                <p>{project.description}</p>
+                <span className="project-date">생성일: {new Date(project.created_at).toLocaleDateString()}</span>
+              </div>
+            </Link>
           ))
         ) : (
           <p>아직 생성된 프로젝트가 없습니다. 새 프로젝트를 만들어보세요!</p>
