@@ -1,0 +1,70 @@
+/* src/pages/ProjectsPage.css */
+
+.projects-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+}
+
+.projects-container > h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+}
+
+.project-list {
+    display: grid;
+    /* 카드의 최소 너비는 280px, 공간이 남으면 균등하게 채웁니다. */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px; /* 카드 사이의 간격 */
+}
+
+.project-card {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 내부 요소들의 수직 정렬 */
+}
+
+.project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.project-card h2 {
+    font-size: 1.4rem;
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.project-card p {
+    font-size: 1rem;
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1; /* 설명 부분이 카드의 남은 공간을 모두 차지하도록 설정 */
+}
+
+.project-card .project-date {
+    font-size: 0.85rem;
+    color: #6c757d;
+    text-align: right;
+    display: block;
+    margin-top: auto; /* 날짜를 카드 하단에 고정 */
+}
+
+.error-message {
+    color: #e74c3c;
+    text-align: center;
+}

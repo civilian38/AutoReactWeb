@@ -21,16 +21,14 @@ const LoginPage = () => {
                 password,
             });
 
-            // 1. 토큰 저장
             localStorage.setItem('accessToken', response.data.access);
             localStorage.setItem('refreshToken', response.data.refresh);
-            // 2. 사용자 이름(ID) 저장
             localStorage.setItem('username', username);
 
             console.log('로그인 성공:', response.data);
 
-            // 3. 로그인 성공 후 메인 페이지('/')로 이동 (alert 삭제)
-            navigate('/');
+            // 🌟 로그인 성공 후 /projects 페이지로 이동하도록 수정
+            navigate('/projects');
         } catch (err) {
             console.error('로그인 실패:', err);
             setError('아이디 또는 비밀번호가 일치하지 않습니다.');
