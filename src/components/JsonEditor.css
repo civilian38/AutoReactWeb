@@ -18,44 +18,17 @@
   border-bottom: 1px solid #e0e0e0;
   border-radius: 8px 8px 0 0;
 }
-.editor-header h4 {
-  margin: 0;
-  font-size: 1rem;
-  color: #333;
-}
-.mode-switcher button {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-.mode-switcher button:first-child {
-  border-radius: 5px 0 0 5px;
-  border-right: none;
-}
-.mode-switcher button:last-child {
-  border-radius: 0 5px 5px 0;
-}
-.mode-switcher button.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
-}
+.editor-header h4 { margin: 0; font-size: 1rem; color: #333; }
+.mode-switcher button { padding: 5px 10px; border: 1px solid #ccc; background-color: #fff; cursor: pointer; font-size: 0.85rem; }
+.mode-switcher button:first-child { border-radius: 5px 0 0 5px; border-right: none; }
+.mode-switcher button:last-child { border-radius: 0 5px 5px 0; }
+.mode-switcher button.active { background-color: #007bff; color: white; border-color: #007bff; }
 
 /* --- Form 모드 & 행 스타일 --- */
-.form-mode {
-  padding: 15px;
-}
-.pair-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  /* ✨ CHANGED: 중첩 에디터와 높이를 맞추기 위해 상단 정렬 */
-  align-items: flex-start;
-}
+.form-mode { padding: 15px; }
+.pair-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
 
-/* --- ✨ NEW: 행 내부 모든 입력 요소 공통 스타일 --- */
+/* --- 행 내부 모든 입력 요소 공통 스타일 --- */
 .pair-row input,
 .pair-row select {
   padding: 8px;
@@ -64,87 +37,134 @@
   font-family: monospace;
   font-size: 0.9rem;
   box-sizing: border-box;
-  height: 38px; /* 높이 통일 */
+  height: 38px;
 }
 
-/* ✨ NEW: 행 내부 요소들의 너비 분배 */
-.pair-row > input[placeholder="Key"] {
-  flex: 2;
-  min-width: 120px;
+/* --- 행 내부 요소들의 너비 분배 --- */
+.pair-row > .key-container { flex: 2; min-width: 120px; position: relative; }
+.pair-row > .type-selector { flex: 1; min-width: 95px; }
+.pair-row > .value-container { flex: 3; min-width: 150px; }
+
+/* ✨ ADDED: 배열 모드 인덱스 스타일 */
+.pair-row > .array-index {
+  flex: 0 0 40px;
+  background-color: #f0f0f0;
+  color: #555;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-family: monospace;
 }
-.pair-row > .type-selector {
-  flex: 1;
-  min-width: 95px;
-}
-/* Value 입력 필드 및 중첩 에디터를 감싸는 컨테이너 */
-.pair-row > .value-container {
-  flex: 3;
-  min-width: 150px;
-}
+
 .pair-row .value-container > input,
-.pair-row .value-container > select {
-  width: 100%;
-}
-/* 비활성화된 input 스타일 */
-.pair-row input:disabled {
-  background-color: #f1f1f1;
-  cursor: not-allowed;
-}
+.pair-row .value-container > select { width: 100%; }
+.pair-row input:disabled { background-color: #f1f1f1; cursor: not-allowed; }
+
+/* ✨ ADDED: Key 입력 및 에러 스타일 */
+.key-container > input { width: 100%; }
+.key-container > input.key-error { border-color: #dc3545; }
+.key-error-message { color: #dc3545; font-size: 0.75rem; position: absolute; bottom: -15px; left: 0; }
 
 
-/* --- ✨ NEW: 중첩된 에디터 스타일 --- */
-.nested {
-  border: none;
-  border-left: 3px solid #007bff;
-  margin: 0;
-  padding-left: 5px;
-  border-radius: 0 4px 4px 0;
-  background-color: #f8f9fa;
-  width: 100%;
-}
-.nested > .form-mode {
-  padding: 10px; /* 중첩 에디터는 패딩 축소 */
-}
-
+/* --- 중첩된 에디터 스타일 --- */
+.nested { border: none; margin: 0; border-radius: 0; background-color: transparent; width: 100%; }
+.nested > .form-mode { padding: 0; }
+.nested > .form-mode .pair-row { background-color: #f8f9fa; padding: 8px; border-radius: 4px; }
 
 /* --- 버튼 스타일 --- */
-.add-btn, .remove-btn {
+.add-btn, .remove-btn { border: none; border-radius: 4px; color: white; cursor: pointer; padding: 8px 12px; font-weight: bold; height: 38px; }
+.add-btn { background-color: #28a745; }
+.remove-btn { background-color: #dc3545; align-self: center; }
+
+/* ✨ ADDED: 객체/배열 편집 버튼 */
+.edit-nested-btn {
+  width: 100%;
+  height: 38px;
+  background-color: #6c757d;
+  color: white;
   border: none;
   border-radius: 4px;
-  color: white;
   cursor: pointer;
-  padding: 8px 12px;
-  font-weight: bold;
-  height: 38px; /* ✨ CHANGED: 입력 필드와 높이 통일 */
+  font-family: sans-serif;
+  text-align: left;
+  padding-left: 10px;
 }
-.add-btn {
-  background-color: #28a745;
-}
-.remove-btn {
-  background-color: #dc3545;
-  /* ✨ NEW: 상단 정렬된 행에서 버튼을 중앙에 오게 함 */
-  align-self: center; 
-}
+.edit-nested-btn:hover { background-color: #5a6268; }
+
+/* --- Raw 모드 & 에러 메시지 --- */
+.raw-mode { width: calc(100% - 30px); padding: 15px; border: none; border-radius: 0 0 8px 8px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; resize: vertical; min-height: 150px; }
+.raw-mode:focus { outline: none; }
+.editor-error { color: #e74c3c; font-size: 0.9rem; padding: 5px 15px; margin: 0; background-color: #fbeae5; }
 
 
-/* --- Raw 모드 & 에러 메시지 (기존과 동일) --- */
-.raw-mode {
-  width: calc(100% - 30px);
+/* ✨ ======================================== ✨ */
+/* ✨ ADDED: 모달(Modal) 관련 스타일 전체 추가 */
+/* ✨ ======================================== ✨ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+.modal-header {
   padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ✨ ADDED: 브레드크럼(Breadcrumbs) 스타일 */
+.breadcrumbs {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-family: monospace;
+}
+
+.modal-header .close-btn {
+  background: none;
   border: none;
-  border-radius: 0 0 8px 8px;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.9rem;
-  resize: vertical;
-  min-height: 150px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #888;
 }
-.raw-mode:focus {
-  outline: none;
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
 }
-.editor-error {
-  color: #e74c3c;
-  font-size: 0.9rem;
-  padding: 5px 15px;
-  margin: 0;
-  background-color: #fbeae5;
+.modal-footer {
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
+.modal-footer button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.modal-footer .save-btn { background-color: #007bff; color: white; }
+.modal-footer .cancel-btn { background-color: #f1f1f1; color: #333; }
