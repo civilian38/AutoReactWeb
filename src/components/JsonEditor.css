@@ -1,11 +1,14 @@
 /* src/components/JsonEditor.css */
 
+/* --- 기본 에디터 컨테이너 --- */
 .json-editor {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   margin-bottom: 20px;
+  background-color: #fff;
 }
 
+/* --- 에디터 헤더 --- */
 .editor-header {
   display: flex;
   justify-content: space-between;
@@ -15,13 +18,11 @@
   border-bottom: 1px solid #e0e0e0;
   border-radius: 8px 8px 0 0;
 }
-
 .editor-header h4 {
   margin: 0;
   font-size: 1rem;
   color: #333;
 }
-
 .mode-switcher button {
   padding: 5px 10px;
   border: 1px solid #ccc;
@@ -29,7 +30,6 @@
   cursor: pointer;
   font-size: 0.85rem;
 }
-
 .mode-switcher button:first-child {
   border-radius: 5px 0 0 5px;
   border-right: none;
@@ -37,32 +37,77 @@
 .mode-switcher button:last-child {
   border-radius: 0 5px 5px 0;
 }
-
 .mode-switcher button.active {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
 }
 
+/* --- Form 모드 & 행 스타일 --- */
 .form-mode {
   padding: 15px;
 }
-
 .pair-row {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
-  align-items: center;
+  /* ✨ CHANGED: 중첩 에디터와 높이를 맞추기 위해 상단 정렬 */
+  align-items: flex-start;
 }
 
-.pair-row input {
-  flex: 1;
+/* --- ✨ NEW: 행 내부 모든 입력 요소 공통 스타일 --- */
+.pair-row input,
+.pair-row select {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-family: monospace;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+  height: 38px; /* 높이 통일 */
 }
 
+/* ✨ NEW: 행 내부 요소들의 너비 분배 */
+.pair-row > input[placeholder="Key"] {
+  flex: 2;
+  min-width: 120px;
+}
+.pair-row > .type-selector {
+  flex: 1;
+  min-width: 95px;
+}
+/* Value 입력 필드 및 중첩 에디터를 감싸는 컨테이너 */
+.pair-row > .value-container {
+  flex: 3;
+  min-width: 150px;
+}
+.pair-row .value-container > input,
+.pair-row .value-container > select {
+  width: 100%;
+}
+/* 비활성화된 input 스타일 */
+.pair-row input:disabled {
+  background-color: #f1f1f1;
+  cursor: not-allowed;
+}
+
+
+/* --- ✨ NEW: 중첩된 에디터 스타일 --- */
+.nested {
+  border: none;
+  border-left: 3px solid #007bff;
+  margin: 0;
+  padding-left: 5px;
+  border-radius: 0 4px 4px 0;
+  background-color: #f8f9fa;
+  width: 100%;
+}
+.nested > .form-mode {
+  padding: 10px; /* 중첩 에디터는 패딩 축소 */
+}
+
+
+/* --- 버튼 스타일 --- */
 .add-btn, .remove-btn {
   border: none;
   border-radius: 4px;
@@ -70,16 +115,19 @@
   cursor: pointer;
   padding: 8px 12px;
   font-weight: bold;
+  height: 38px; /* ✨ CHANGED: 입력 필드와 높이 통일 */
 }
-
 .add-btn {
   background-color: #28a745;
 }
-
 .remove-btn {
   background-color: #dc3545;
+  /* ✨ NEW: 상단 정렬된 행에서 버튼을 중앙에 오게 함 */
+  align-self: center; 
 }
 
+
+/* --- Raw 모드 & 에러 메시지 (기존과 동일) --- */
 .raw-mode {
   width: calc(100% - 30px);
   padding: 15px;
@@ -90,11 +138,9 @@
   resize: vertical;
   min-height: 150px;
 }
-
 .raw-mode:focus {
   outline: none;
 }
-
 .editor-error {
   color: #e74c3c;
   font-size: 0.9rem;

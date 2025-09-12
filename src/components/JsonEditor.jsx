@@ -1,45 +1,76 @@
 // src/components/JsonEditor.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './JsonEditor.css';
 
-const JsonEditor = ({ title, onJsonChange }) => {
-  const [mode, setMode] = useState('form'); // 'form' or 'raw'
-  const [pairs, setPairs] = useState([{ id: Date.now(), key: '', value: '' }]);
-  const [rawJson, setRawJson] = useState('{}');
-  const [error, setError] = useState('');
-
-  // pairs 상태가 변경될 때마다 부모 컴포넌트로 유효한 JSON 객체 전달
-  useEffect(() => {
-    try {
-      const jsonObject = pairs.reduce((acc, pair) => {
-        if (pair.key) { // 키가 있는 경우에만 객체에 포함
-          acc[pair.key] = pair.value;
-        }
-        return acc;
-      }, {});
-      onJsonChange(jsonObject);
-      setError('');
-    } catch (e) {
-      // 이 경우는 거의 발생하지 않음
+const JsonEditor = ({ title, onJsonChange, isNested = false, initialData = null }) => {
+  const [mode, setMode] = useState('form');
+  
+  // ✨ CHANGED: 초기 상태를 생성하는 함수
+  const createInitialPairs = useCallback((data) => {
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return [{ id: Date.now(), key: '', value: '', type: 'string' }];
     }
-  }, [pairs, onJsonChange]);
+    const entries = Object.entries(data);
+    if (entries.length === 0) {
+      return [{ id: Date.now(), key: '', value: '', type: 'string' }];
+    }
+    return entries.map(([key, value]) => {
+      const id = Date.now() + Math.random();
+      const type = value === null ? 'null' : (typeof value === 'object' && !Array.isArray(value) ? 'object' : typeof value);
+      
+      let pairValue;
+      if (type === 'object') {
+        pairValue = value; 
+      } else if (type === 'boolean') {
+        pairValue = value ? 'true' : 'false';
+      } else {
+        pairValue = String(value);
+      }
+      return { id, key, value: pairValue, type };
+    });
+  }, []);
 
-  // Raw 모드에서 Form 모드로 전환
+  const [pairs, setPairs] = useState(() => createInitialPairs(initialData));
+  const [rawJson, setRawJson] = useState(() => JSON.stringify(initialData || {}, null, 2));
+  const [error, setError] = useState('');
+  
+  // ✨ CHANGED: useEffect에서 buildJsonObject 함수를 밖으로 빼서 재사용
+  const buildJsonObject = useCallback((currentPairs) => {
+    return currentPairs.reduce((acc, pair) => {
+      if (pair.key) {
+        switch (pair.type) {
+          case 'number':
+            acc[pair.key] = Number(pair.value) || 0;
+            break;
+          case 'boolean':
+            acc[pair.key] = pair.value === 'true';
+            break;
+          case 'null':
+            acc[pair.key] = null;
+            break;
+          case 'object':
+            acc[pair.key] = pair.value && typeof pair.value === 'object' ? pair.value : {};
+            break;
+          default:
+            acc[pair.key] = pair.value;
+        }
+      }
+      return acc;
+    }, {});
+  }, []);
+
+  useEffect(() => {
+    const jsonObject = buildJsonObject(pairs);
+    onJsonChange(jsonObject);
+    setError('');
+  }, [pairs, onJsonChange, buildJsonObject]);
+
+
   const switchToForm = () => {
     try {
       const parsed = JSON.parse(rawJson);
-      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-        setError('객체 형태의 JSON만 Form 모드로 변환할 수 있습니다.');
-        return;
-      }
-      const newPairs = Object.entries(parsed).map(([key, value]) => ({
-        id: Date.now() + Math.random(),
-        key,
-        value: typeof value === 'object' ? JSON.stringify(value) : String(value),
-      }));
-      // 만약 빈 객체라면 기본 한 줄 추가
-      setPairs(newPairs.length > 0 ? newPairs : [{ id: Date.now(), key: '', value: '' }]);
+      setPairs(createInitialPairs(parsed));
       setError('');
       setMode('form');
     } catch (e) {
@@ -47,91 +78,123 @@ const JsonEditor = ({ title, onJsonChange }) => {
     }
   };
 
-  // Form 모드에서 Raw 모드로 전환
   const switchToRaw = () => {
-    const jsonObject = pairs.reduce((acc, pair) => {
-      if (pair.key) {
-        try {
-            // 값이 JSON 형태(객체 또는 배열)인지 확인 후 파싱
-            acc[pair.key] = JSON.parse(pair.value);
-        } catch (e) {
-            // 파싱 실패 시 문자열로 처리
-            acc[pair.key] = pair.value;
-        }
-      }
-      return acc;
-    }, {});
-    setRawJson(JSON.stringify(jsonObject, null, 2));
+    setRawJson(JSON.stringify(buildJsonObject(pairs), null, 2));
     setMode('raw');
   };
 
-  const handlePairChange = (id, field, value) => {
-    setPairs(pairs.map(p => (p.id === id ? { ...p, [field]: value } : p)));
+  const handlePairChange = (id, field, newValue) => {
+    setPairs(currentPairs => 
+      currentPairs.map(p => {
+        if (p.id !== id) return p;
+
+        if (field === 'type') {
+          const newType = newValue;
+          let resetValue;
+          switch (newType) {
+            case 'object': resetValue = {}; break;
+            case 'boolean': resetValue = 'true'; break;
+            case 'null': resetValue = 'null'; break;
+            default: resetValue = ''; break;
+          }
+          return { ...p, type: newType, value: resetValue };
+        }
+        return { ...p, [field]: newValue };
+      })
+    );
+  };
+
+  const handleNestedJsonChange = (id, nestedJson) => {
+    setPairs(currentPairs => 
+      currentPairs.map(p => p.id === id ? { ...p, value: nestedJson } : p)
+    );
   };
 
   const addPair = () => {
-    setPairs([...pairs, { id: Date.now(), key: '', value: '' }]);
+    setPairs([...pairs, { id: Date.now(), key: '', value: '', type: 'string' }]);
   };
 
   const removePair = (id) => {
     setPairs(pairs.filter(p => p.id !== id));
   };
-
+  
   const handleRawJsonChange = (e) => {
     const newRawJson = e.target.value;
     setRawJson(newRawJson);
     try {
-        const parsed = JSON.parse(newRawJson);
-        onJsonChange(parsed); // 실시간으로 부모에게 전달
-        setError('');
-    } catch(e) {
-        setError('JSON 형식이 올바르지 않습니다.');
+      JSON.parse(newRawJson);
+      setError('');
+    } catch (e) {
+      setError('JSON 형식이 올바르지 않습니다.');
     }
-  }
+  };
 
+  const renderValueInput = (pair) => {
+    switch (pair.type) {
+      case 'number':
+        return <input type="number" placeholder="Value" value={pair.value} onChange={(e) => handlePairChange(pair.id, 'value', e.target.value)} />;
+      case 'boolean':
+        return (
+          <select value={pair.value} onChange={(e) => handlePairChange(pair.id, 'value', e.target.value)}>
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        );
+      case 'object':
+        return (
+          <div className="nested-editor">
+            {/* ✨ CHANGED: initialData prop으로 현재 객체 값을 전달! */}
+            <JsonEditor 
+              isNested={true}
+              initialData={pair.value} 
+              onJsonChange={(nestedJson) => handleNestedJsonChange(pair.id, nestedJson)} 
+            />
+          </div>
+        );
+      case 'null':
+        return <input type="text" value="null" readOnly disabled />;
+      default:
+        return <input type="text" placeholder="Value" value={pair.value} onChange={(e) => handlePairChange(pair.id, 'value', e.target.value)} />;
+    }
+  };
 
   return (
-    <div className="json-editor">
-      <div className="editor-header">
-        <h4>{title}</h4>
-        <div className="mode-switcher">
-          <button type="button" onClick={switchToForm} className={mode === 'form' ? 'active' : ''}>Form</button>
-          <button type="button" onClick={switchToRaw} className={mode === 'raw' ? 'active' : ''}>Raw</button>
+    <div className={`json-editor ${isNested ? 'nested' : ''}`}>
+      {!isNested && (
+        <div className="editor-header">
+          <h4>{title}</h4>
+          <div className="mode-switcher">
+            <button type="button" onClick={switchToForm} className={mode === 'form' ? 'active' : ''}>Form</button>
+            <button type="button" onClick={switchToRaw} className={mode === 'raw' ? 'active' : ''}>Raw</button>
+          </div>
         </div>
-      </div>
+      )}
+
       {error && <p className="editor-error">{error}</p>}
+      
       {mode === 'form' ? (
         <div className="form-mode">
-          {pairs.map((pair, index) => (
+          {pairs.map((pair) => (
             <div key={pair.id} className="pair-row">
-              <input
-                type="text"
-                placeholder="Key"
-                value={pair.key}
-                onChange={(e) => handlePairChange(pair.id, 'key', e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Value"
-                value={pair.value}
-                onChange={(e) => handlePairChange(pair.id, 'value', e.target.value)}
-              />
+              <input type="text" placeholder="Key" value={pair.key} onChange={(e) => handlePairChange(pair.id, 'key', e.target.value)} />
+              <select className="type-selector" value={pair.type} onChange={(e) => handlePairChange(pair.id, 'type', e.target.value)}>
+                <option value="string">String</option>
+                <option value="number">Number</option>
+                <option value="boolean">Boolean</option>
+                <option value="object">Object</option>
+                <option value="null">Null</option>
+              </select>
+              <div className="value-container">{renderValueInput(pair)}</div>
               <button type="button" onClick={() => removePair(pair.id)} className="remove-btn">-</button>
             </div>
           ))}
           <button type="button" onClick={addPair} className="add-btn">+ 행 추가</button>
         </div>
       ) : (
-        <textarea
-          className="raw-mode"
-          value={rawJson}
-          onChange={handleRawJsonChange}
-          rows="8"
-        />
+        <textarea className="raw-mode" value={rawJson} onChange={handleRawJsonChange} rows={isNested ? 4 : 8} />
       )}
     </div>
   );
 };
 
 export default JsonEditor;
-
