@@ -1,0 +1,97 @@
+/* src/components/CreateApiDocForm.css */
+
+.apidoc-form-container {
+  padding: 25px;
+  background-color: #f8f9fa; /* 배경색을 약간 다르게 하여 구분 */
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 30px; /* 아래 목록과의 간격 */
+}
+
+.apidoc-form .form-title {
+  text-align: center;
+  color: #34495e;
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.error-message {
+  color: #e74c3c;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* 폼 액션 버튼들을 위한 스타일 */
+.form-actions {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-actions .submit-button,
+.form-actions .cancel-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.form-actions .submit-button {
+  background-color: #007bff;
+  color: white;
+}
+
+.form-actions .submit-button:hover {
+  background-color: #0056b3;
+}
+
+.form-actions .submit-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.form-actions .cancel-button {
+  background-color: #6c757d;
+  color: white;
+}
+
+.form-actions .cancel-button:hover {
+  background-color: #5a6268;
+}
+
+/* JsonEditor 내부의 h4 태그 크기 조정 */
+.json-editor h4 {
+  font-size: 1.1rem;
+  margin-top: 0;
+}

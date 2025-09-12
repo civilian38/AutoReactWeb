@@ -59,8 +59,8 @@ const ProjectsPage = () => {
       <div className="project-list">
         {projects.length > 0 ? (
           projects.map(project => (
-            // ✨ Link 컴포넌트로 project-card를 감싸서 클릭 시 상세 페이지로 이동하도록 수정
-            <Link key={project.id} to={`/project/${project.id}`} className="project-card-link">
+            // ✨ 각 카드를 Link로 감싸서 상세 페이지로 이동하도록 수정
+            <Link to={`/project/${project.id}`} key={project.id} className="project-card-link">
               <div className="project-card">
                 <h2>{project.name}</h2>
                 <p>{project.description}</p>

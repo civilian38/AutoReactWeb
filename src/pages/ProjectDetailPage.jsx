@@ -1,155 +1,126 @@
 // src/pages/ProjectDetailPage.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import CreateApiDocForm from '../components/CreateApiDocForm'; // ✨ 새로 만들 폼 컴포넌트를 임포트합니다.
 import './ProjectDetailPage.css';
 
 const ProjectDetailPage = () => {
-  const { id } = useParams(); // URL의 :id 값을 가져옴
+  const { project_id } = useParams();
   const navigate = useNavigate();
 
   const [apiDocs, setApiDocs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  
-  // 확장된 API 문서의 ID와 상세 데이터를 저장할 state
-  const [expandedDocId, setExpandedDocId] = useState(null);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailData, setDetailData] = useState(null);
+  const [expandedDoc, setExpandedDoc] = useState(null);
 
-  useEffect(() => {
+  // ✨ 새 API 문서 생성 폼의 표시 여부를 관리하는 state
+  const [isCreating, setIsCreating] = useState(false);
+
+  const fetchApiDocs = useCallback(async () => {
+    setIsLoading(true);
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
       navigate('/login');
       return;
     }
 
-    const fetchApiDocs = async () => {
-      try {
-        const response = await axios.get(
-          `https://autoreactgenerator-g8g9bge3heh0addq.koreasouth-01.azurewebsites.net/api/apidocs/${id}/`,
-          {
-            headers: { 'Authorization': `Bearer ${accessToken}` }
-          }
-        );
-        setApiDocs(response.data);
-      } catch (err) {
-        console.error('API 문서 목록 조회 실패:', err);
-        setError('API 문서 목록을 불러오는 데 실패했습니다.');
-        if (err.response?.status === 401) navigate('/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchApiDocs();
-  }, [id, navigate]);
-
-  const handleToggleDetail = async (docId) => {
-    // 이미 열려있는 문서를 다시 클릭하면 닫음
-    if (expandedDocId === docId) {
-      setExpandedDocId(null);
-      setDetailData(null);
-      return;
-    }
-    
-    // 새로운 문서를 열기 전 초기화
-    setDetailData(null);
-    setExpandedDocId(docId);
-    setDetailLoading(true);
-    const accessToken = localStorage.getItem('accessToken');
-
     try {
       const response = await axios.get(
-        `https://autoreactgenerator-g8g9bge3heh0addq.koreasouth-01.azurewebsites.net/api/apidocs/detail/${docId}/`,
-        {
-          headers: { 'Authorization': `Bearer ${accessToken}` }
-        }
+        `https://autoreactgenerator-g8g9bge3heh0addq.koreasouth-01.azurewebsites.net/api/apidocs/${project_id}/`,
+        { headers: { 'Authorization': `Bearer ${accessToken}` } }
       );
-      setDetailData(response.data);
+      setApiDocs(response.data);
+      setError('');
     } catch (err) {
-      console.error('API 상세 정보 조회 실패:', err);
-      setError('API 상세 정보를 불러오는 데 실패했습니다.');
+      console.error("API 문서 가져오기 실패:", err);
+      setError("API 문서를 불러올 수 없습니다. 다시 시도해주세요.");
       if (err.response?.status === 401) navigate('/login');
     } finally {
-      setDetailLoading(false);
+      setIsLoading(false);
     }
-  };
-  
-  // HTTP 메서드에 따라 클래스 이름을 반환하는 함수
-  const getMethodClassName = (method) => {
-    return `method-${method.toLowerCase()}`;
+  }, [project_id, navigate]);
+
+  useEffect(() => {
+    fetchApiDocs();
+  }, [fetchApiDocs]);
+
+  // ✨ API 문서 생성이 성공했을 때 호출될 콜백 함수
+  const handleCreateSuccess = () => {
+    setIsCreating(false); // 폼을 닫습니다.
+    fetchApiDocs();     // API 문서 목록을 다시 불러옵니다.
   };
 
-  if (loading) return <div className="detail-container"><h1>API 문서 목록 로딩 중...</h1></div>;
-  if (error) return <div className="detail-container"><h1 className="error-message">{error}</h1></div>;
+  const handleToggleDetail = (doc) => {
+    if (expandedDoc && expandedDoc.id === doc.id) {
+      setExpandedDoc(null);
+    } else {
+      setExpandedDoc(doc);
+    }
+  };
+
+  const getMethodClass = (method) => `method-${method.toLowerCase()}`;
+
+  if (isLoading && apiDocs.length === 0) { // 초기 로딩 시에만 전체 로딩 표시
+    return <div className="detail-container"><h1>API 문서 로딩 중...</h1></div>;
+  }
+
+  if (error) {
+    return <div className="detail-container"><h1 className="error-message">{error}</h1></div>;
+  }
 
   return (
     <div className="detail-container">
-      <h1>API 문서 목록 📄</h1>
+      <div className="detail-header">
+        <h1>API 문서 목록 📄</h1>
+        {/* ✨ 버튼 클릭 시 isCreating 상태를 true로 변경하여 폼을 보여줍니다. */}
+        <button onClick={() => setIsCreating(true)} className="add-api-doc-button">
+          + 새 API 문서 추가
+        </button>
+      </div>
+
+      {/* isCreating이 true일 때만 CreateApiDocForm을 렌더링합니다. */}
+      {isCreating && (
+        <div className="create-form-box">
+          <CreateApiDocForm
+            projectId={project_id}
+            onSuccess={handleCreateSuccess}
+            onCancel={() => setIsCreating(false)} // 취소 버튼을 위한 콜백
+          />
+        </div>
+      )}
+
       <div className="api-doc-list">
         {apiDocs.length > 0 ? (
           apiDocs.map(doc => (
             <div key={doc.id} className="api-doc-item-wrapper">
-              <div className="api-doc-item">
+              <div className="api-doc-item" onClick={() => handleToggleDetail(doc)}>
                 <div className="api-info">
-                  <span className={`api-method ${getMethodClassName(doc.http_method)}`}>{doc.http_method}</span>
+                  <span className={`api-method ${getMethodClass(doc.http_method)}`}>{doc.http_method}</span>
                   <span className="api-url">{doc.url}</span>
                 </div>
-                <button onClick={() => handleToggleDetail(doc.id)} className="toggle-button">
-                  {expandedDocId === doc.id ? '숨기기 ▲' : '자세히 ▼'}
+                <button className="toggle-button">
+                  {expandedDoc?.id === doc.id ? '숨기기 ▲' : '자세히 ▼'}
                 </button>
               </div>
-              {/* 확장된 상태일 때 상세 정보 표시 */}
-              {expandedDocId === doc.id && (
+              {expandedDoc?.id === doc.id && (
                 <div className="api-doc-detail">
-                  {detailLoading ? <p>상세 정보 로딩 중...</p> : 
-                    detailData ? (
-                      <>
-                        {/* ✨ 설명은 항상 표시 */}
-                        <p><strong>설명:</strong> {detailData.description}</p>
-                        
-                        {/* ✨ request_headers에 내용이 있을 때만 표시 */}
-                        {Object.keys(detailData.request_headers).length > 0 && (
-                          <>
-                            <h4>Request Headers</h4>
-                            <pre>{JSON.stringify(detailData.request_headers, null, 2)}</pre>
-                          </>
-                        )}
-
-                        {/* ✨ query_params에 내용이 있을 때만 표시 */}
-                        {Object.keys(detailData.query_params).length > 0 && (
-                          <>
-                            <h4>Query Params</h4>
-                            <pre>{JSON.stringify(detailData.query_params, null, 2)}</pre>
-                          </>
-                        )}
-                        
-                        {/* ✨ request_format에 내용이 있을 때만 표시 */}
-                        {Object.keys(detailData.request_format).length > 0 && (
-                          <>
-                            <h4>Request Body</h4>
-                            <pre>{JSON.stringify(detailData.request_format, null, 2)}</pre>
-                          </>
-                        )}
-
-                        {/* ✨ response_format에 내용이 있을 때만 표시 */}
-                        {Object.keys(detailData.response_format).length > 0 && (
-                          <>
-                            <h4>Response Body</h4>
-                            <pre>{JSON.stringify(detailData.response_format, null, 2)}</pre>
-                          </>
-                        )}
-                      </>
-                    ) : <p>상세 정보를 불러오지 못했습니다.</p>
-                  }
+                  <p><strong>설명:</strong> {doc.description || '설명이 없습니다.'}</p>
+                  <h4>Request Headers</h4>
+                  <pre>{JSON.stringify(doc.request_headers || {}, null, 2)}</pre>
+                  <h4>Query Params</h4>
+                  <pre>{JSON.stringify(doc.query_params || {}, null, 2)}</pre>
+                  <h4>Request Body</h4>
+                  <pre>{JSON.stringify(doc.request_format || {}, null, 2)}</pre>
+                  <h4>Response Body</h4>
+                  <pre>{JSON.stringify(doc.response_format || {}, null, 2)}</pre>
                 </div>
               )}
             </div>
           ))
         ) : (
-          <p>이 프로젝트에는 아직 작성된 API 문서가 없습니다.</p>
+          !isCreating && <p>이 프로젝트에 작성된 API 문서가 없습니다. 새로 추가해보세요!</p>
         )}
       </div>
     </div>

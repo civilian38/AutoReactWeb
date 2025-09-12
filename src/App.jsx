@@ -2,12 +2,15 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import MainPage from './pages/MainPage';
 import ProjectsPage from './pages/ProjectsPage';
 import CreateProjectPage from './pages/CreateProjectPage';
-import ProjectDetailPage from './pages/ProjectDetailPage'; // ✨ ProjectDetailPage 컴포넌트 import
+import ProjectDetailPage from './pages/ProjectDetailPage';
+// CreateApiDocPage는 이제 사용하지 않으므로 아래 줄을 삭제합니다.
+// import CreateApiDocPage from './pages/CreateApiDocPage';
 
 import './App.css';
 
@@ -21,7 +24,9 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/create" element={<CreateProjectPage />} />
-          <Route path="/project/:id" element={<ProjectDetailPage />} /> {/* ✨ /project/:id 경로 추가 */}
+          <Route path="/project/:project_id" element={<ProjectDetailPage />} />
+          {/* 아래 라우트는 이제 ProjectDetailPage 내에서 처리되므로 삭제합니다. */}
+          {/* <Route path="/project/:project_id/apidoc/create" element={<CreateApiDocPage />} /> */}
         </Routes>
       </div>
     </Router>

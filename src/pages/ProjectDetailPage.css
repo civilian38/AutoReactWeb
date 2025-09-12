@@ -120,3 +120,40 @@
   color: #e74c3c;
   text-align: center;
 }
+
+
+.add-api-doc-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  text-decoration: none; /* Link 태그가 아니므로 추가 */
+}
+
+.add-api-doc-button:hover {
+  background-color: #0056b3;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.detail-header h1 {
+  margin: 0;
+}
+
+
+/* 새로 추가된 API 문서 생성 폼을 감싸는 박스 */
+.create-form-box {
+  animation: fadeIn 0.5s ease;
+  margin-bottom: 30px; /* 목록과 폼 사이의 간격을 줌 */
+}
+

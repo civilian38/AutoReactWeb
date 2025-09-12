@@ -1,0 +1,104 @@
+/* src/components/JsonEditor.css */
+
+.json-editor {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f7f7f7;
+  padding: 8px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  border-radius: 8px 8px 0 0;
+}
+
+.editor-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.mode-switcher button {
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.mode-switcher button:first-child {
+  border-radius: 5px 0 0 5px;
+  border-right: none;
+}
+.mode-switcher button:last-child {
+  border-radius: 0 5px 5px 0;
+}
+
+.mode-switcher button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.form-mode {
+  padding: 15px;
+}
+
+.pair-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.pair-row input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.add-btn, .remove-btn {
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  padding: 8px 12px;
+  font-weight: bold;
+}
+
+.add-btn {
+  background-color: #28a745;
+}
+
+.remove-btn {
+  background-color: #dc3545;
+}
+
+.raw-mode {
+  width: calc(100% - 30px);
+  padding: 15px;
+  border: none;
+  border-radius: 0 0 8px 8px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 150px;
+}
+
+.raw-mode:focus {
+  outline: none;
+}
+
+.editor-error {
+  color: #e74c3c;
+  font-size: 0.9rem;
+  padding: 5px 15px;
+  margin: 0;
+  background-color: #fbeae5;
+}

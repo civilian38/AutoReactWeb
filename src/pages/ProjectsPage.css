@@ -111,3 +111,29 @@
   justify-content: space-between;
   height: 100%; /* ✨ 카드의 높이를 통일하기 위해 추가 */
 }
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.detail-header h1 {
+  margin: 0; /* 기존 h1의 margin-bottom 제거 */
+}
+
+.add-api-doc-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.add-api-doc-button:hover {
+  background-color: #0056b3;
+}
