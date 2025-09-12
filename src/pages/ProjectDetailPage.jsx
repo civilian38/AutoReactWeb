@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CreateApiDocForm from '../components/CreateApiDocForm';
+import EditApiDocForm from '../components/EditApiDocForm'; // ✨ 수정: EditApiDocForm 컴포넌트 import
 import './ProjectDetailPage.css';
 
 const ProjectDetailPage = () => {
@@ -13,13 +14,13 @@ const ProjectDetailPage = () => {
     const [apiDocs, setApiDocs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    
-    // ✨ 수정: 확장된 문서의 ID와 상세 데이터를 별도로 관리합니다.
+
     const [expandedDocId, setExpandedDocId] = useState(null);
     const [detailedDoc, setDetailedDoc] = useState(null);
     const [isDetailLoading, setIsDetailLoading] = useState(false);
 
     const [isCreating, setIsCreating] = useState(false);
+    const [editingDocId, setEditingDocId] = useState(null); // ✨ 추가: 수정 중인 문서의 ID를 관리하는 상태
 
     const fetchApiDocs = useCallback(async () => {
         setIsLoading(true);
@@ -54,19 +55,27 @@ const ProjectDetailPage = () => {
         fetchApiDocs();
     };
     
-    // ✨ 수정: 상세 정보 조회 로직 추가
+    // ✨ 추가: 수정 성공 시 호출될 콜백 함수
+    const handleEditSuccess = () => {
+        setEditingDocId(null);
+        setExpandedDocId(null);
+        setDetailedDoc(null);
+        fetchApiDocs();
+    };
+
     const handleToggleDetail = async (docId) => {
-        // 이미 열려있는 문서를 다시 클릭하면 닫습니다.
+        // 수정 모드에서는 상세 정보 토글을 비활성화합니다.
+        if (editingDocId) return;
+
         if (expandedDocId === docId) {
             setExpandedDocId(null);
             setDetailedDoc(null);
             return;
         }
 
-        // 새로운 문서를 클릭하면 상세 정보를 불러옵니다.
         setExpandedDocId(docId);
         setIsDetailLoading(true);
-        setDetailedDoc(null); // 이전 데이터 초기화
+        setDetailedDoc(null);
 
         const accessToken = localStorage.getItem('accessToken');
         if (!accessToken) {
@@ -89,9 +98,35 @@ const ProjectDetailPage = () => {
         }
     };
 
+    // ✨ 추가: API 문서 삭제 핸들러
+    const handleDeleteDoc = async (docId) => {
+        if (window.confirm('정말로 이 API 문서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+            const accessToken = localStorage.getItem('accessToken');
+            if (!accessToken) {
+                navigate('/login');
+                return;
+            }
+
+            try {
+                await axios.delete(
+                    `https://autoreactgenerator-g8g9bge3heh0addq.koreasouth-01.azurewebsites.net/api/apidocs/detail/${docId}/`,
+                    { headers: { 'Authorization': `Bearer ${accessToken}` } }
+                );
+                // 삭제 성공 후 목록을 새로고침합니다.
+                fetchApiDocs();
+                // 확장된 뷰를 닫습니다.
+                setExpandedDocId(null);
+                setDetailedDoc(null);
+            } catch (err) {
+                console.error("API 문서 삭제 실패:", err);
+                setError("문서 삭제에 실패했습니다. 다시 시도해주세요.");
+                if (err.response?.status === 401) navigate('/login');
+            }
+        }
+    };
+
+
     const getMethodClass = (method) => `method-${method.toLowerCase()}`;
-    
-    // ✨ 추가: 객체가 비어있는지 확인하는 헬퍼 함수
     const isObjectNotEmpty = (obj) => obj && Object.keys(obj).length > 0;
 
     if (isLoading && apiDocs.length === 0) {
@@ -134,44 +169,50 @@ const ProjectDetailPage = () => {
                                     {expandedDocId === doc.id ? '숨기기 ▲' : '자세히 ▼'}
                                 </button>
                             </div>
-                            {/* ✨ 수정: 상세 정보 표시 로직 변경 */}
+                            
+                            {/* ✨ 수정: 상세 정보 표시 로직에 수정/삭제 기능 추가 */}
                             {expandedDocId === doc.id && (
                                 <div className="api-doc-detail">
                                     {isDetailLoading && <p>상세 정보를 불러오는 중...</p>}
                                     {detailedDoc && !isDetailLoading && (
-                                        <>
-                                            {detailedDoc.description && (
-                                                <p><strong>설명:</strong> {detailedDoc.description}</p>
-                                            )}
-                                            
-                                            {isObjectNotEmpty(detailedDoc.request_headers) && (
-                                                <>
-                                                    <h4>Request Headers</h4>
-                                                    <pre>{JSON.stringify(detailedDoc.request_headers, null, 2)}</pre>
-                                                </>
-                                            )}
+                                        editingDocId === doc.id ? (
+                                            // ✨ 수정 모드일 때 EditApiDocForm 렌더링
+                                            <EditApiDocForm
+                                                docId={doc.id}
+                                                initialData={detailedDoc}
+                                                onSuccess={handleEditSuccess}
+                                                onCancel={() => setEditingDocId(null)}
+                                            />
+                                        ) : (
+                                            // ✨ 일반 상세 정보 뷰
+                                            <>
+                                                {detailedDoc.description && (
+                                                    <p><strong>설명:</strong> {detailedDoc.description}</p>
+                                                )}
 
-                                            {isObjectNotEmpty(detailedDoc.query_params) && (
-                                                <>
-                                                    <h4>Query Params</h4>
-                                                    <pre>{JSON.stringify(detailedDoc.query_params, null, 2)}</pre>
-                                                </>
-                                            )}
+                                                {isObjectNotEmpty(detailedDoc.request_headers) && (
+                                                    <><h4>Request Headers</h4><pre>{JSON.stringify(detailedDoc.request_headers, null, 2)}</pre></>
+                                                )}
 
-                                            {isObjectNotEmpty(detailedDoc.request_format) && (
-                                                <>
-                                                    <h4>Request Body</h4>
-                                                    <pre>{JSON.stringify(detailedDoc.request_format, null, 2)}</pre>
-                                                </>
-                                            )}
-                                            
-                                            {isObjectNotEmpty(detailedDoc.response_format) && (
-                                                <>
-                                                    <h4>Response Body</h4>
-                                                    <pre>{JSON.stringify(detailedDoc.response_format, null, 2)}</pre>
-                                                </>
-                                            )}
-                                        </>
+                                                {isObjectNotEmpty(detailedDoc.query_params) && (
+                                                    <><h4>Query Params</h4><pre>{JSON.stringify(detailedDoc.query_params, null, 2)}</pre></>
+                                                )}
+
+                                                {isObjectNotEmpty(detailedDoc.request_format) && (
+                                                    <><h4>Request Body</h4><pre>{JSON.stringify(detailedDoc.request_format, null, 2)}</pre></>
+                                                )}
+
+                                                {isObjectNotEmpty(detailedDoc.response_format) && (
+                                                    <><h4>Response Body</h4><pre>{JSON.stringify(detailedDoc.response_format, null, 2)}</pre></>
+                                                )}
+
+                                                {/* ✨ 추가: 수정 및 삭제 버튼 컨테이너 */}
+                                                <div className="api-doc-actions">
+                                                    <button onClick={() => setEditingDocId(doc.id)} className="edit-button">수정</button>
+                                                    <button onClick={() => handleDeleteDoc(doc.id)} className="delete-button">삭제</button>
+                                                </div>
+                                            </>
+                                        )
                                     )}
                                 </div>
                             )}
@@ -186,3 +227,4 @@ const ProjectDetailPage = () => {
 };
 
 export default ProjectDetailPage;
+

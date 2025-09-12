@@ -1,30 +1,30 @@
 /* src/pages/ProjectDetailPage.css */
 
 .detail-container {
-  padding: 40px;
-  max-width: 900px;
-  margin: 40px auto;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+    padding: 40px;
+    max-width: 900px;
+    margin: 40px auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
 }
 
 .detail-container h1 {
-  text-align: center;
-  color: #2c3e50;
-  margin-bottom: 40px;
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 40px;
 }
 
 .api-doc-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .api-doc-item-wrapper {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  transition: box-shadow 0.3s ease;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
 }
 
 .api-doc-item-wrapper:hover {
@@ -32,27 +32,28 @@
 }
 
 .api-doc-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  background-color: #f8f9fa;
-  border-radius: 8px 8px 0 0; /* 상세 정보가 열렸을 때를 위해 아래쪽 radius는 0으로 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0 0; /* 상세 정보가 열렸을 때를 위해 아래쪽 radius는 0으로 */
+    cursor: pointer;
 }
 
 .api-info {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 .api-method {
-  padding: 5px 12px;
-  border-radius: 5px;
-  color: white;
-  font-weight: bold;
-  font-size: 0.9rem;
+    padding: 5px 12px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
 }
 
 /* HTTP 메서드별 배경색 */
@@ -62,30 +63,30 @@
 .method-delete { background-color: #dc3545; } /* 빨간색 */
 
 .api-url {
-  font-size: 1rem;
-  color: #495057;
+    font-size: 1rem;
+    color: #495057;
 }
 
 .toggle-button {
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
 .toggle-button:hover {
-  background-color: #5a6268;
+    background-color: #5a6268;
 }
 
 .api-doc-detail {
-  padding: 20px;
-  background-color: #ffffff;
-  border-top: 1px solid #dee2e6;
-  border-radius: 0 0 8px 8px;
-  animation: fadeIn 0.5s ease;
+    padding: 20px;
+    background-color: #ffffff;
+    border-top: 1px solid #dee2e6;
+    border-radius: 0 0 8px 8px;
+    animation: fadeIn 0.5s ease;
 }
 
 .api-doc-detail h4 {
@@ -102,58 +103,98 @@
 }
 
 .api-doc-detail pre {
-  background-color: #e9ecef;
-  padding: 15px;
-  border-radius: 5px;
-  white-space: pre-wrap;     /* 자동 줄바꿈 */
-  word-break: break-all;
-  color: #495057;
-  text-align: left;          /* ✨ 왼쪽 정렬 추가 */
+    background-color: #e9ecef;
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-wrap; /* 자동 줄바꿈 */
+    word-break: break-all;
+    color: #495057;
+    text-align: left; /* 왼쪽 정렬 추가 */
+}
+
+/* ✨ 추가: 수정/삭제 버튼 컨테이너 스타일 */
+.api-doc-actions {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* ✨ 추가: 수정/삭제 버튼 공통 스타일 */
+.edit-button,
+.delete-button {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+/* ✨ 추가: 수정 버튼 스타일 */
+.edit-button {
+    background-color: #17a2b8; /* Info Blue */
+    color: white;
+}
+
+.edit-button:hover {
+    background-color: #138496;
+}
+
+/* ✨ 추가: 삭제 버튼 스타일 */
+.delete-button {
+    background-color: #dc3545; /* Danger Red */
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .error-message {
-  color: #e74c3c;
-  text-align: center;
+    color: #e74c3c;
+    text-align: center;
 }
 
 
 .add-api-doc-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: background-color 0.3s;
-  text-decoration: none; /* Link 태그가 아니므로 추가 */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    text-decoration: none; /* Link 태그가 아니므로 추가 */
 }
 
 .add-api-doc-button:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
 }
 
 .detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
 .detail-header h1 {
-  margin: 0;
+    margin: 0;
 }
 
 
 /* 새로 추가된 API 문서 생성 폼을 감싸는 박스 */
 .create-form-box {
-  animation: fadeIn 0.5s ease;
-  margin-bottom: 30px; /* 목록과 폼 사이의 간격을 줌 */
+    animation: fadeIn 0.5s ease;
+    margin-bottom: 30px; /* 목록과 폼 사이의 간격을 줌 */
 }
-

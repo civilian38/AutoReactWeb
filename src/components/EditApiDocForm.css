@@ -1,0 +1,96 @@
+/* src/components/EditApiDocForm.css */
+/* CreateApiDocForm.css 와 동일한 스타일을 사용합니다. */
+
+.apidoc-form-container.edit-mode {
+    border: 2px solid #17a2b8; /* 수정 모드를 구분하기 위한 테두리 */
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #f8f9fa;
+}
+
+.apidoc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.apidoc-form .form-title {
+    text-align: center;
+    color: #343a40;
+    margin-bottom: 10px;
+}
+
+.apidoc-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.apidoc-form label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #495057;
+    text-align: left;
+}
+
+.apidoc-form input[type="text"],
+.apidoc-form select,
+.apidoc-form textarea {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.apidoc-form input[type="text"]:focus,
+.apidoc-form select:focus,
+.apidoc-form textarea:focus {
+    outline: none;
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.apidoc-form textarea {
+    resize: vertical;
+}
+
+.apidoc-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.apidoc-form .submit-button,
+.apidoc-form .cancel-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.apidoc-form .submit-button {
+    background-color: #28a745;
+    color: white;
+}
+.apidoc-form .submit-button:hover {
+    background-color: #218838;
+}
+
+.apidoc-form .cancel-button {
+    background-color: #6c757d;
+    color: white;
+}
+.apidoc-form .cancel-button:hover {
+    background-color: #5a6268;
+}
+
+.apidoc-form .submit-button:disabled,
+.apidoc-form .cancel-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
