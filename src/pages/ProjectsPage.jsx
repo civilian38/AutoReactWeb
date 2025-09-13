@@ -1,7 +1,8 @@
 // src/pages/ProjectsPage.jsx
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// ✨ 변경된 내용: 기존 axios 대신 새로 만든 api 인스턴스를 가져옵니다.
+import api from '../api/axiosInstance';
 import { useNavigate, Link } from 'react-router-dom';
 import './ProjectsPage.css';
 
@@ -13,25 +14,16 @@ const ProjectsPage = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const accessToken = localStorage.getItem('accessToken');
-      if (!accessToken) {
-        navigate('/login');
-        return;
-      }
-
+      // AccessToken 확인 로직은 인터셉터가 처리하므로 여기서 제거해도 됩니다.
       try {
-        const response = await axios.get('https://autoreactgenerator-g8g9bge3heh0addq.koreasouth-01.azurewebsites.net/api/project/', {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        });
+        // ✨ 변경된 내용: axios.get -> api.get
+        const response = await api.get('project/');
         setProjects(response.data.results);
       } catch (err) {
         console.error('프로젝트 목록을 불러오는데 실패했습니다:', err);
-        setError('프로젝트 목록을 불러오는데 실패했습니다. 다시 로그인해주세요.');
-        if (err.response && err.response.status === 401) {
-          navigate('/login');
-        }
+        // 인터셉터가 401 에러를 처리하므로, 여기서는 일반적인 에러 메시지만 표시합니다.
+        // navigate('/login') 로직은 인터셉터에서 처리됩니다.
+        setError('프로젝트 목록을 불러오는데 실패했습니다. 다시 시도해주세요.');
       } finally {
         setLoading(false);
       }
@@ -56,20 +48,30 @@ const ProjectsPage = () => {
           + 새 프로젝트 생성
         </Link>
       </div>
-      <div className="project-list">
+
+      {/* ✨ 변경된 내용: 카드 레이아웃을 테이블 레이아웃으로 변경 */}
+      <div className="project-table-container">
         {projects.length > 0 ? (
-          projects.map(project => (
-            // ✨ 각 카드를 Link로 감싸서 상세 페이지로 이동하도록 수정
-            <Link to={`/project/${project.id}`} key={project.id} className="project-card-link">
-              <div className="project-card">
-                <h2>{project.name}</h2>
-                <p>{project.description}</p>
-                <span className="project-date">생성일: {new Date(project.created_at).toLocaleDateString()}</span>
-              </div>
-            </Link>
-          ))
+          <table className="project-table">
+            <thead>
+              <tr>
+                <th>프로젝트 이름</th>
+                <th>설명</th>
+                <th>생성일</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map(project => (
+                <tr key={project.id} onClick={() => navigate(`/project/${project.id}`)} className="project-row">
+                  <td>{project.name}</td>
+                  <td>{project.description}</td>
+                  <td>{new Date(project.created_at).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
-          <p>아직 생성된 프로젝트가 없습니다. 새 프로젝트를 만들어보세요!</p>
+          <p className="no-projects-message">아직 생성된 프로젝트가 없습니다. 새 프로젝트를 만들어보세요!</p>
         )}
       </div>
     </div>

@@ -1,19 +1,15 @@
 // src/components/EditApiDocForm.jsx
 
 import React, { useState, useCallback } from 'react';
-import axios from 'axios';
+// ✨ 변경: axios를 중앙 관리되는 api 인스턴스로 교체 (상대 경로 주의)
+import api from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import JsonEditor from './JsonEditor';
-import './EditApiDocForm.css'; // 수정 폼 전용 CSS
+import './EditApiDocForm.css';
 
-// docId: 수정할 문서의 ID
-// initialData: 폼을 채울 초기 데이터
-// onSuccess: 수정 성공 시 호출될 콜백
-// onCancel: 취소 시 호출될 콜백
 const EditApiDocForm = ({ docId, initialData, onSuccess, onCancel }) => {
     const navigate = useNavigate();
 
-    // 부모로부터 받은 initialData로 state 초기화
     const [apiData, setApiData] = useState(initialData);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -31,30 +27,17 @@ const EditApiDocForm = ({ docId, initialData, onSuccess, onCancel }) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
-        const accessToken = localStorage.getItem('accessToken');
 
-        if (!accessToken) {
-            alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-            navigate('/login');
-            return;
-        }
+        // ✨ 삭제: accessToken 관련 로직 제거
 
         try {
-            // PUT 요청으로 API 문서 수정
-            await axios.put(
-                `https://autoreactgenerator-g8g9bge3heh0addq.koreasouth-01.azurewebsites.net/api/apidocs/detail/${docId}/`,
-                apiData,
-                {
-                    headers: { 'Authorization': `Bearer ${accessToken}` }
-                }
-            );
-            onSuccess(); // 성공 콜백 호출
+            // ✨ 변경: axios.put -> api.put, URL 경로 수정, 헤더 삭제
+            await api.put(`apidocs/detail/${docId}/`, apiData);
+            onSuccess();
         } catch (err) {
             console.error("API 문서 수정 실패:", err.response || err);
             setError('API 문서 수정에 실패했습니다. 입력 내용을 확인하고 다시 시도해주세요.');
-            if (err.response?.status === 401) {
-                navigate('/login');
-            }
+            // ✨ 삭제: 401 에러 처리는 인터셉터가 자동으로 처리합니다.
         } finally {
             setIsLoading(false);
         }
@@ -126,3 +109,5 @@ const EditApiDocForm = ({ docId, initialData, onSuccess, onCancel }) => {
 };
 
 export default EditApiDocForm;
+
+

@@ -1,139 +1,87 @@
 /* src/pages/ProjectsPage.css */
 
 .projects-container {
-  padding: 40px;
+  width: 90%;
   max-width: 1200px;
   margin: 40px auto;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 🌟 헤더 스타일 추가 */
 .projects-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eee;
 }
 
-.projects-container > .projects-header > h1 {
-  text-align: center;
-  color: #2c3e50;
-  margin: 0; /* 🌟 기존 마진 제거 */
-  font-size: 2.5rem;
+.projects-header h1 {
+  font-size: 2rem;
+  color: #333;
 }
 
-/* 🌟 프로젝트 생성 버튼 스타일 추가 */
 .create-project-button {
-  display: inline-block;
+  padding: 12px 24px;
   background-color: #007bff;
   color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
   text-decoration: none;
+  border-radius: 5px;
   font-weight: bold;
   transition: background-color 0.3s ease;
-  font-size: 1rem;
 }
 
 .create-project-button:hover {
   background-color: #0056b3;
 }
 
-.project-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
+/* ✨ 추가된 테이블 스타일 */
+.project-table-container {
+  overflow-x: auto;
 }
 
-.project-card {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.project-table th,
+.project-table td {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.project-table th {
+  background-color: #f2f2f2;
+  font-weight: 600;
+  color: #555;
+}
+
+.project-table tbody .project-row {
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  transition: background-color 0.2s ease-in-out;
 }
 
-.project-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+.project-table tbody .project-row:hover {
+  background-color: #e9ecef;
 }
 
-.project-card h2 {
-  font-size: 1.4rem;
+.project-table td:first-child {
+  font-weight: bold;
   color: #007bff;
-  margin-top: 0;
-  margin-bottom: 15px;
 }
 
-.project-card p {
-  font-size: 1rem;
-  color: #495057;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  flex-grow: 1;
-}
-
-.project-card .project-date {
-  font-size: 0.85rem;
-  color: #6c757d;
-  text-align: right;
-  display: block;
-  margin-top: auto;
+.no-projects-message {
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 1.2rem;
+  color: #666;
 }
 
 .error-message {
-  color: #e74c3c;
-  text-align: center;
-}
-
-.project-card-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.project-card {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%; /* ✨ 카드의 높이를 통일하기 위해 추가 */
-}
-
-.detail-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.detail-header h1 {
-  margin: 0; /* 기존 h1의 margin-bottom 제거 */
-}
-
-.add-api-doc-button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
-.add-api-doc-button:hover {
-  background-color: #0056b3;
+  color: #dc3545;
 }

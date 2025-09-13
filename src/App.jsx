@@ -25,8 +25,6 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/create" element={<CreateProjectPage />} />
           <Route path="/project/:project_id" element={<ProjectDetailPage />} />
-          {/* 아래 라우트는 이제 ProjectDetailPage 내에서 처리되므로 삭제합니다. */}
-          {/* <Route path="/project/:project_id/apidoc/create" element={<CreateApiDocPage />} /> */}
         </Routes>
       </div>
     </Router>

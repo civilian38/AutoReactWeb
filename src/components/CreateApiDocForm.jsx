@@ -1,70 +1,56 @@
 // src/components/CreateApiDocForm.jsx
 
 import React, { useState, useCallback } from 'react';
-import axios from 'axios';
+// ✨ 변경: axios를 중앙 관리되는 api 인스턴스로 교체 (상대 경로 주의)
+import api from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import JsonEditor from './JsonEditor';
-import './CreateApiDocForm.css'; // ✨ 새로운 CSS 파일을 사용합니다.
+import './CreateApiDocForm.css';
 
-// 부모로부터 projectId, onSuccess, onCancel props를 받습니다.
 const CreateApiDocForm = ({ projectId, onSuccess, onCancel }) => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const [apiData, setApiData] = useState({
-    url: '',
-    http_method: 'GET',
-    description: '',
-    request_headers: {},
-    query_params: {},
-    request_format: {},
-    response_format: {},
-  });
+    const [apiData, setApiData] = useState({
+        url: '',
+        http_method: 'GET',
+        description: '',
+        request_headers: {},
+        query_params: {},
+        request_format: {},
+        response_format: {},
+    });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setApiData(prevData => ({ ...prevData, [name]: value }));
-  };
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setApiData(prevData => ({ ...prevData, [name]: value }));
+    };
 
-  const handleJsonChange = useCallback((fieldName, jsonObject) => {
-    setApiData(prevData => ({ ...prevData, [fieldName]: jsonObject }));
-  }, []);
+    const handleJsonChange = useCallback((fieldName, jsonObject) => {
+        setApiData(prevData => ({ ...prevData, [fieldName]: jsonObject }));
+    }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (!accessToken) {
-        alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-        navigate('/login');
-        return;
-    }
-
-    try {
-      await axios.post(
-        `https://autoreactgenerator-g8g9bge3heh0addq.koreasouth-01.azurewebsites.net/api/apidocs/${projectId}/`,
-        apiData,
-        {
-          headers: { 'Authorization': `Bearer ${accessToken}` }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+        
+        // ✨ 삭제: accessToken 관련 로직 제거
+        
+        try {
+            // ✨ 변경: axios.post -> api.post, URL 경로 수정, 헤더 삭제
+            await api.post(`apidocs/${projectId}/`, apiData);
+            onSuccess();
+        } catch (err) {
+            console.error("API 문서 생성 실패:", err.response || err);
+            setError('API 문서 생성에 실패했습니다. 입력 내용을 확인하고 다시 시도해주세요.');
+            // ✨ 삭제: 401 에러 처리는 인터셉터가 자동으로 처리합니다.
+        } finally {
+            setIsLoading(false);
         }
-      );
-      // ✨ 성공 시, navigate 대신 부모로부터 받은 onSuccess 콜백을 호출합니다.
-      onSuccess();
-
-    } catch (err) {
-      console.error("API 문서 생성 실패:", err.response || err);
-      setError('API 문서 생성에 실패했습니다. 입력 내용을 확인하고 다시 시도해주세요.');
-      if (err.response?.status === 401) {
-        navigate('/login');
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
   return (
     // ✨ 폼 컨테이너 클래스명을 수정하여 스타일링을 구분합니다.
@@ -134,3 +120,5 @@ const CreateApiDocForm = ({ projectId, onSuccess, onCancel }) => {
 };
 
 export default CreateApiDocForm;
+
+
